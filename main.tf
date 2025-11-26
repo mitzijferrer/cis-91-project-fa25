@@ -22,6 +22,18 @@ resource "google_service_account" "vm_service_account" {
   display_name = "VM Instance Service Account"
 }
 
+resource "google_project_iam_member" "vm_sa_monitoring_writer" {
+  project = var.project
+  role    = "roles/monitoring.metricWriter"
+  member  = "serviceAccount:${google_service_account.vm_service_account.email}"
+}
+
+resource "google_project_iam_member" "vm_sa_logs_writer" {
+  project = var.project
+  role    = "roles/logging.logWriter"
+  member  = "serviceAccount:${google_service_account.vm_service_account.email}"
+}
+
 resource "google_compute_disk" "persistent_disk" {
   name = "vm-persistent-disk"
   type = "pd-balanced"
@@ -74,6 +86,11 @@ resource "google_compute_instance" "web_instance" {
     network = google_compute_network.vpc_network.name
     access_config {
     }
+  }
+
+  service_account {
+    email  = google_service_account.vm_service_account.email
+    scopes = ["cloud-platform"]
   }
 }
 
