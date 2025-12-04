@@ -55,6 +55,7 @@
           - php
           - mediawiki
           - python3-pymysql
+          
     - name: Copy the google logging config
       ansible.builtin.copy:
         src: config.yaml
